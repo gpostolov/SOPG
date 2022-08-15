@@ -24,16 +24,18 @@ pthread_mutex_t mutex_newfd = PTHREAD_MUTEX_INITIALIZER;
 char buffer[128];
 int n;
 
-int main (void){
+int main (void)
+{
     printf("Inicio Serial Service\r\n");
 
     /* SE LANZAN LOS THREADS */
     const char *message1 = "TCP Server";
-	pthread_create (&tcp_thread, NULL, tcp_main, (void *) message1);
+    pthread_create (&tcp_thread, NULL, tcp_main, (void *) message1);
     /*                       */
 
     /* INICIO INICIALIZACION SERIAL MANAGER */
-    if (serial_open(4040,115200) == -1){
+    if (serial_open(4040,115200) == -1)
+    {
         fprintf(stderr,"ERROR\r\n");
     }
     /* FIN INICIALIZACION SERIAL MANAGER    */
@@ -57,15 +59,19 @@ int main (void){
 
     /* INICIO LOOP DE SERIAL MANAGER */
     printf("(Inicio UART)\r\n");
-    while(1){
-        if( (n = serial_receive(buffer,128)) > 0 ){
+    while(1)
+    {
+        if( (n = serial_receive(buffer,128)) > 0 )
+	{
             buffer[n]=0x00;
             printf("Recibi %d bytes.:%s\n",n,buffer);
             //si lei algo, lo envio por socket
             pthread_mutex_lock (&mutex_newfd);
             {
-                if (newfd != -1){
-                    if (write (newfd, buffer, n) == -1) {
+                if (newfd != -1)
+		{
+                    if (write (newfd, buffer, n) == -1) 
+		    {
                         perror("Error escribiendo mensaje en socket. Skipping.");
                     }
                 }
@@ -76,8 +82,8 @@ int main (void){
     }
     /* FIN LOOP DE SERIAL MANAGER    */
 
-	exit(EXIT_SUCCESS);
-	return 0;
+    exit(EXIT_SUCCESS);
+    return 0;
 }
 
 void sig_handler(int sig)
