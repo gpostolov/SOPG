@@ -24,6 +24,8 @@ pthread_mutex_t mutex_newfd = PTHREAD_MUTEX_INITIALIZER;
 char buffer[128];
 int n;
 
+bool cierre_forzado = false;
+
 void bloquearSign(void)
 {
     sigset_t set;
@@ -87,6 +89,7 @@ int main (void)
     printf("(Inicio UART)\r\n");
     while(1)
     {
+        if (cierre_forzado == true) break;
         if( (n = serial_receive(buffer,128)) > 0 )
 	{
             buffer[n]=0x00;
@@ -108,18 +111,19 @@ int main (void)
     }
     /* FIN LOOP DE SERIAL MANAGER    */
 
-    exit(EXIT_SUCCESS);
-    return 0;
+    /* CIERRE ORDENADO DE LOS RECURSOS */
+    serial_close(); //SerialManager;
+    tcp_close();    //tcp
+    pthread_cancel(tcp_thread);
+    pthread_join(tcp_thread, NULL);
+    exit(1);	
+    /*                                 */
 }
 
 void sig_handler(int sig)
 {
     if ( (sig == SIGINT) ||(sig == SIGTERM) )
     {
-        serial_close(); //SerialManager;
-        tcp_close();    //tcp
-        pthread_cancel(tcp_thread);
-        pthread_join(tcp_thread, NULL);
-        exit(1);
+        cierre_forzado = true;
     }
 }
