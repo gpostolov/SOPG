@@ -98,8 +98,10 @@ void * tcp_main(void* message)
             }
         }
         // Cerramos conexion con cliente
-    	close(newfd);
-    	newfd = -1;
+        if(newfd != -1){
+    	    close(newfd);
+    	    newfd = -1;
+         }
     } // fin while
     /* FIN LOOP DE TCP SERVER */
 
@@ -109,6 +111,9 @@ void * tcp_main(void* message)
 
 void tcp_close(void)
 {
-    close(newfd);
+    if(newfd != -1){
+        close(newfd);
+        newfd = -1;
+    }
     close(s);
 }
