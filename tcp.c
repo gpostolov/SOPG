@@ -99,6 +99,7 @@ void * tcp_main(void* message)
         }
         // Cerramos conexion con cliente
     	close(newfd);
+    	newfd = -1;
     } // fin while
     /* FIN LOOP DE TCP SERVER */
 
