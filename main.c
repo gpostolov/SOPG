@@ -9,6 +9,7 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <pthread.h>
+#include <stdbool.h>
 #include <signal.h>
 
 #include "SerialManager.h"
