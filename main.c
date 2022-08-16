@@ -24,14 +24,40 @@ pthread_mutex_t mutex_newfd = PTHREAD_MUTEX_INITIALIZER;
 char buffer[128];
 int n;
 
+void bloquearSign(void)
+{
+    sigset_t set;
+    int s;
+    sigemptyset(&set);
+    sigaddset(&set, SIGINT);
+    sigaddset(&set, SIGTERM);
+    pthread_sigmask(SIG_BLOCK, &set, NULL);
+}
+
+void desbloquearSign(void)
+{
+    sigset_t set;
+    int s;
+    sigemptyset(&set);
+    sigaddset(&set, SIGINT);
+    sigaddset(&set, SIGTERM);
+    pthread_sigmask(SIG_UNBLOCK, &set, NULL);
+}
+
 int main (void)
 {
+    printf("Bloqueo signal\n");
+    bloquearSign();
+	
     printf("Inicio Serial Service\r\n");
 
     /* SE LANZAN LOS THREADS */
     const char *message1 = "TCP Server";
     pthread_create (&tcp_thread, NULL, tcp_main, (void *) message1);
     /*                       */
+	
+    printf("Desbloqueo signal\n");
+    desbloquearSign();
 
     /* INICIO INICIALIZACION SERIAL MANAGER */
     if (serial_open(4040,115200) == -1)
